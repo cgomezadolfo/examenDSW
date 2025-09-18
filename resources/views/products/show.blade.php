@@ -32,15 +32,24 @@
                         <!-- Imagen y Estado del Producto -->
                         <div class="col-md-4">
                             <div class="text-center mb-4">
-                                <div class="avatar avatar-xl mx-auto mb-3">
-                                    <span class="avatar-initial rounded-circle bg-label-success fs-2">
-                                        <i class="ti ti-package"></i>
-                                    </span>
-                                </div>
+                                @if($product->imagen_url)
+                                    <div class="avatar avatar-xl mx-auto mb-3">
+                                        <img src="{{ $product->imagen_url }}" alt="{{ $product->nombre }}" class="rounded">
+                                    </div>
+                                @else
+                                    <div class="avatar avatar-xl mx-auto mb-3">
+                                        <span class="avatar-initial rounded-circle bg-label-success fs-2">
+                                            <i class="ti ti-package"></i>
+                                        </span>
+                                    </div>
+                                @endif
                                 <h4 class="mb-1">{{ $product->nombre }}</h4>
-                                @if($product->stock > 10)
+                                <span class="badge bg-label-info mb-2">{{ $product->sku }}</span><br>
+                                @if($product->stock_actual > $product->stock_alto)
+                                    <span class="badge bg-success">Stock Alto</span>
+                                @elseif($product->stock_actual > $product->stock_bajo)
                                     <span class="badge bg-success">En Stock</span>
-                                @elseif($product->stock > 0)
+                                @elseif($product->stock_actual > 0)
                                     <span class="badge bg-warning">Stock Bajo</span>
                                 @else
                                     <span class="badge bg-danger">Sin Stock</span>
@@ -51,49 +60,57 @@
                         <!-- Información Detallada -->
                         <div class="col-md-8">
                             <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <label class="form-label text-muted">Descripción Corta</label>
+                                    <p class="form-control-plaintext">{{ $product->descripcion_corta }}</p>
+                                </div>
+
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label text-muted">Categoría</label>
+                                    <label class="form-label text-muted">Precio Neto</label>
                                     <p class="form-control-plaintext">
-                                        <span class="badge bg-label-primary fs-6">{{ $product->categoria }}</span>
+                                        <i class="ti ti-currency-dollar me-2 text-success"></i>
+                                        <strong>${{ number_format($product->precio_neto, 0, ',', '.') }}</strong>
                                     </p>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label text-muted">Precio</label>
+                                    <label class="form-label text-muted">Precio con IVA</label>
                                     <p class="form-control-plaintext">
-                                        <i class="ti ti-currency-dollar me-2 text-success"></i>
-                                        <strong>${{ number_format($product->precio, 0, ',', '.') }}</strong>
+                                        <i class="ti ti-currency-dollar me-2 text-info"></i>
+                                        <strong>${{ number_format($product->precio_venta, 0, ',', '.') }}</strong>
                                     </p>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
                                     <label class="form-label text-muted">Stock Actual</label>
                                     <p class="form-control-plaintext">
-                                        @if($product->stock > 10)
-                                            <span class="badge bg-success fs-6">{{ $product->stock }} unidades</span>
-                                        @elseif($product->stock > 0)
-                                            <span class="badge bg-warning fs-6">{{ $product->stock }} unidades</span>
+                                        @if($product->stock_actual > $product->stock_alto)
+                                            <span class="badge bg-success fs-6">{{ $product->stock_actual }} unidades</span>
+                                        @elseif($product->stock_actual > $product->stock_bajo)
+                                            <span class="badge bg-success fs-6">{{ $product->stock_actual }} unidades</span>
+                                        @elseif($product->stock_actual > 0)
+                                            <span class="badge bg-warning fs-6">{{ $product->stock_actual }} unidades</span>
                                         @else
-                                            <span class="badge bg-danger fs-6">{{ $product->stock }} unidades</span>
+                                            <span class="badge bg-danger fs-6">{{ $product->stock_actual }} unidades</span>
                                         @endif
                                     </p>
                                 </div>
 
                                 <div class="col-md-6 mb-4">
-                                    <label class="form-label text-muted">Código de Barras</label>
+                                    <label class="form-label text-muted">Niveles de Stock</label>
                                     <p class="form-control-plaintext">
-                                        @if($product->codigo_barras)
-                                            <code>{{ $product->codigo_barras }}</code>
-                                        @else
-                                            <span class="text-muted">No asignado</span>
-                                        @endif
+                                        <small class="text-muted">
+                                            Mínimo: {{ $product->stock_minimo }} | 
+                                            Bajo: {{ $product->stock_bajo }} | 
+                                            Alto: {{ $product->stock_alto }}
+                                        </small>
                                     </p>
                                 </div>
 
-                                @if($product->descripcion)
+                                @if($product->descripcion_larga)
                                 <div class="col-12 mb-4">
-                                    <label class="form-label text-muted">Descripción</label>
-                                    <p class="form-control-plaintext">{{ $product->descripcion }}</p>
+                                    <label class="form-label text-muted">Descripción Detallada</label>
+                                    <p class="form-control-plaintext">{{ $product->descripcion_larga }}</p>
                                 </div>
                                 @endif
 
@@ -119,9 +136,9 @@
                         <div class="col-12">
                             <div class="card bg-light">
                                 <div class="card-body">
-                                    <h6 class="card-title">Información Adicional</h6>
+                                    <h6 class="card-title">Información de Inventario</h6>
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-sm me-3">
                                                     <span class="avatar-initial rounded bg-label-info">
@@ -129,34 +146,47 @@
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0">#{{ $product->id }}</h6>
-                                                    <small class="text-muted">ID del Producto</small>
+                                                    <h6 class="mb-0">{{ $product->sku }}</h6>
+                                                    <small class="text-muted">SKU</small>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-sm me-3">
-                                                    <span class="avatar-initial rounded bg-label-success">
-                                                        <i class="ti ti-calendar-plus"></i>
+                                                    <span class="avatar-initial rounded bg-label-warning">
+                                                        <i class="ti ti-package"></i>
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0">{{ $product->created_at->diffForHumans() }}</h6>
-                                                    <small class="text-muted">En el catálogo</small>
+                                                    <h6 class="mb-0">{{ $product->stock_actual }}</h6>
+                                                    <small class="text-muted">Stock Actual</small>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar-sm me-3">
-                                                    <span class="avatar-initial rounded {{ $product->stock > 0 ? 'bg-label-success' : 'bg-label-danger' }}">
-                                                        <i class="ti ti-{{ $product->stock > 0 ? 'check' : 'x' }}"></i>
+                                                    <span class="avatar-initial rounded bg-label-danger">
+                                                        <i class="ti ti-alert-triangle"></i>
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0">{{ $product->stock > 0 ? 'Disponible' : 'Agotado' }}</h6>
-                                                    <small class="text-muted">Estado actual</small>
+                                                    <h6 class="mb-0">{{ $product->stock_bajo }}</h6>
+                                                    <small class="text-muted">Alerta Stock Bajo</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-3">
+                                                    <span class="avatar-initial rounded {{ $product->stock_actual > 0 ? 'bg-label-success' : 'bg-label-danger' }}">
+                                                        <i class="ti ti-{{ $product->stock_actual > 0 ? 'check' : 'x' }}"></i>
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">{{ $product->stock_actual > 0 ? 'Disponible' : 'Agotado' }}</h6>
+                                                    <small class="text-muted">Estado</small>
                                                 </div>
                                             </div>
                                         </div>

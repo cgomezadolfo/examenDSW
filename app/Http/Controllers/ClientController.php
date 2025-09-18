@@ -30,13 +30,13 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'rut' => 'required|string|max:12|unique:clients,rut',
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:clients,email',
-            'telefono' => 'nullable|string|max:20',
-            'direccion' => 'nullable|string',
-            'ciudad' => 'nullable|string|max:100',
-            'region' => 'nullable|string|max:100',
+            'rut_empresa' => 'required|string|max:12|unique:clients,rut_empresa',
+            'rubro' => 'required|string|max:150',
+            'razon_social' => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'direccion' => 'required|string',
+            'nombre_contacto' => 'required|string|max:200',
+            'email_contacto' => 'required|email|max:100|unique:clients,email_contacto',
         ]);
 
         Client::create($request->all());
@@ -66,13 +66,13 @@ class ClientController extends Controller
     public function update(Request $request, Client $client)
     {
         $request->validate([
-            'rut' => 'required|string|max:12|unique:clients,rut,' . $client->id,
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:clients,email,' . $client->id,
-            'telefono' => 'nullable|string|max:20',
-            'direccion' => 'nullable|string',
-            'ciudad' => 'nullable|string|max:100',
-            'region' => 'nullable|string|max:100',
+            'rut_empresa' => 'required|string|max:12|unique:clients,rut_empresa,' . $client->id,
+            'rubro' => 'required|string|max:150',
+            'razon_social' => 'required|string|max:255',
+            'telefono' => 'required|string|max:20',
+            'direccion' => 'required|string',
+            'nombre_contacto' => 'required|string|max:200',
+            'email_contacto' => 'required|email|max:100|unique:clients,email_contacto,' . $client->id,
         ]);
 
         $client->update($request->all());

@@ -30,15 +30,23 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'sku' => 'required|string|max:50|unique:products,sku',
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'categoria' => 'required|string|max:100',
-            'codigo_barras' => 'nullable|string|max:50|unique:products,codigo_barras',
+            'descripcion_corta' => 'required|string',
+            'descripcion_larga' => 'nullable|string',
+            'imagen_url' => 'nullable|string|max:500',
+            'precio_neto' => 'required|numeric|min:0',
+            'stock_actual' => 'required|integer|min:0',
+            'stock_minimo' => 'required|integer|min:0',
+            'stock_bajo' => 'required|integer|min:0',
+            'stock_alto' => 'required|integer|min:0',
         ]);
 
-        Product::create($request->all());
+        // Calcular precio de venta (precio neto + IVA 19%)
+        $data = $request->all();
+        $data['precio_venta'] = $data['precio_neto'] * 1.19;
+
+        Product::create($data);
 
         return redirect()->route('products.index')->with('success', 'Producto creado exitosamente.');
     }
@@ -65,15 +73,23 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
+            'sku' => 'required|string|max:50|unique:products,sku,' . $product->id,
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'categoria' => 'required|string|max:100',
-            'codigo_barras' => 'nullable|string|max:50|unique:products,codigo_barras,' . $product->id,
+            'descripcion_corta' => 'required|string',
+            'descripcion_larga' => 'nullable|string',
+            'imagen_url' => 'nullable|string|max:500',
+            'precio_neto' => 'required|numeric|min:0',
+            'stock_actual' => 'required|integer|min:0',
+            'stock_minimo' => 'required|integer|min:0',
+            'stock_bajo' => 'required|integer|min:0',
+            'stock_alto' => 'required|integer|min:0',
         ]);
 
-        $product->update($request->all());
+        // Calcular precio de venta (precio neto + IVA 19%)
+        $data = $request->all();
+        $data['precio_venta'] = $data['precio_neto'] * 1.19;
+
+        $product->update($data);
 
         return redirect()->route('products.index')->with('success', 'Producto actualizado exitosamente.');
     }

@@ -26,6 +26,16 @@
                         
                         <div class="row">
                             <div class="col-md-6 mb-4">
+                                <label class="form-label" for="sku">SKU <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('sku') is-invalid @enderror" 
+                                       id="sku" name="sku" value="{{ old('sku', $product->sku) }}" 
+                                       placeholder="Código SKU único" required>
+                                @error('sku')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-4">
                                 <label class="form-label" for="nombre">Nombre del Producto <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control @error('nombre') is-invalid @enderror" 
                                        id="nombre" name="nombre" value="{{ old('nombre', $product->nombre) }}" 
@@ -35,60 +45,91 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label" for="categoria">Categoría <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('categoria') is-invalid @enderror" 
-                                       id="categoria" name="categoria" value="{{ old('categoria', $product->categoria) }}" 
-                                       placeholder="Electrónicos, Ropa, etc." required>
-                                @error('categoria')
+                            <div class="col-md-12 mb-4">
+                                <label class="form-label" for="descripcion_corta">Descripción Corta <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('descripcion_corta') is-invalid @enderror" 
+                                       id="descripcion_corta" name="descripcion_corta" value="{{ old('descripcion_corta', $product->descripcion_corta) }}" 
+                                       placeholder="Descripción breve del producto" required>
+                                @error('descripcion_corta')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12 mb-4">
+                                <label class="form-label" for="descripcion_larga">Descripción Detallada</label>
+                                <textarea class="form-control @error('descripcion_larga') is-invalid @enderror" 
+                                          id="descripcion_larga" name="descripcion_larga" rows="3" 
+                                          placeholder="Descripción detallada del producto">{{ old('descripcion_larga', $product->descripcion_larga) }}</textarea>
+                                @error('descripcion_larga')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6 mb-4">
-                                <label class="form-label" for="precio">Precio <span class="text-danger">*</span></label>
+                                <label class="form-label" for="imagen_url">URL de Imagen</label>
+                                <input type="url" class="form-control @error('imagen_url') is-invalid @enderror" 
+                                       id="imagen_url" name="imagen_url" value="{{ old('imagen_url', $product->imagen_url) }}" 
+                                       placeholder="https://ejemplo.com/imagen.jpg">
+                                @error('imagen_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label" for="precio_neto">Precio Neto <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control @error('precio') is-invalid @enderror" 
-                                           id="precio" name="precio" value="{{ old('precio', $product->precio) }}" 
+                                    <input type="number" class="form-control @error('precio_neto') is-invalid @enderror" 
+                                           id="precio_neto" name="precio_neto" value="{{ old('precio_neto', $product->precio_neto) }}" 
                                            min="0" step="0.01" placeholder="0.00" required>
                                 </div>
-                                @error('precio')
+                                @error('precio_neto')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <div class="form-text">Precio actual con IVA: ${{ number_format($product->precio_venta, 2) }}</div>
                             </div>
 
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label" for="stock">Stock <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('stock') is-invalid @enderror" 
-                                       id="stock" name="stock" value="{{ old('stock', $product->stock) }}" 
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label" for="stock_actual">Stock Actual <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control @error('stock_actual') is-invalid @enderror" 
+                                       id="stock_actual" name="stock_actual" value="{{ old('stock_actual', $product->stock_actual) }}" 
                                        min="0" placeholder="0" required>
-                                @error('stock')
+                                @error('stock_actual')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                @if($product->stock <= 5)
+                                @if($product->isStockLow())
                                     <small class="form-text text-warning">
                                         <i class="ti ti-alert-triangle"></i> Stock bajo - considera reabastecer
                                     </small>
                                 @endif
                             </div>
 
-                            <div class="col-md-6 mb-4">
-                                <label class="form-label" for="codigo_barras">Código de Barras</label>
-                                <input type="text" class="form-control @error('codigo_barras') is-invalid @enderror" 
-                                       id="codigo_barras" name="codigo_barras" value="{{ old('codigo_barras', $product->codigo_barras) }}" 
-                                       placeholder="Código opcional">
-                                @error('codigo_barras')
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label" for="stock_minimo">Stock Mínimo <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control @error('stock_minimo') is-invalid @enderror" 
+                                       id="stock_minimo" name="stock_minimo" value="{{ old('stock_minimo', $product->stock_minimo) }}" 
+                                       min="0" placeholder="0" required>
+                                @error('stock_minimo')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
-                            <div class="col-12 mb-4">
-                                <label class="form-label" for="descripcion">Descripción</label>
-                                <textarea class="form-control @error('descripcion') is-invalid @enderror" 
-                                          id="descripcion" name="descripcion" rows="3" 
-                                          placeholder="Descripción del producto">{{ old('descripcion', $product->descripcion) }}</textarea>
-                                @error('descripcion')
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label" for="stock_bajo">Stock Bajo <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control @error('stock_bajo') is-invalid @enderror" 
+                                       id="stock_bajo" name="stock_bajo" value="{{ old('stock_bajo', $product->stock_bajo) }}" 
+                                       min="0" placeholder="0" required>
+                                @error('stock_bajo')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-3 mb-4">
+                                <label class="form-label" for="stock_alto">Stock Alto <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control @error('stock_alto') is-invalid @enderror" 
+                                       id="stock_alto" name="stock_alto" value="{{ old('stock_alto', $product->stock_alto) }}" 
+                                       min="0" placeholder="0" required>
+                                @error('stock_alto')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

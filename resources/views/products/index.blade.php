@@ -26,9 +26,10 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
+                                    <th>SKU</th>
                                     <th>Nombre</th>
-                                    <th>Categoría</th>
-                                    <th>Precio</th>
+                                    <th>Precio Neto</th>
+                                    <th>Precio Venta</th>
                                     <th>Stock</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
@@ -38,38 +39,48 @@
                                 @forelse($products as $product)
                                     <tr>
                                         <td>
+                                            <span class="badge bg-label-info">{{ $product->sku }}</span>
+                                        </td>
+                                        <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar avatar-sm me-3">
-                                                    <span class="avatar-initial rounded-circle bg-label-success">
-                                                        <i class="ti ti-package"></i>
-                                                    </span>
+                                                    @if($product->imagen_url)
+                                                        <img src="{{ $product->imagen_url }}" alt="{{ $product->nombre }}" class="rounded-circle">
+                                                    @else
+                                                        <span class="avatar-initial rounded-circle bg-label-success">
+                                                            <i class="ti ti-package"></i>
+                                                        </span>
+                                                    @endif
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-0">{{ $product->nombre }}</h6>
-                                                    @if($product->codigo_barras)
-                                                        <small class="text-muted">{{ $product->codigo_barras }}</small>
-                                                    @endif
+                                                    <small class="text-muted">{{ Str::limit($product->descripcion_corta, 30) }}</small>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-label-primary">{{ $product->categoria }}</span>
+                                            <strong>${{ number_format($product->precio_neto, 0, ',', '.') }}</strong>
                                         </td>
                                         <td>
-                                            <strong>${{ number_format($product->precio, 0, ',', '.') }}</strong>
+                                            <strong>${{ number_format($product->precio_venta, 0, ',', '.') }}</strong>
+                                            <small class="text-muted d-block">IVA incl.</small>
                                         </td>
                                         <td>
-                                            @if($product->stock > 10)
-                                                <span class="badge bg-success">{{ $product->stock }}</span>
-                                            @elseif($product->stock > 0)
-                                                <span class="badge bg-warning">{{ $product->stock }}</span>
+                                            @if($product->stock_actual > $product->stock_alto)
+                                                <span class="badge bg-success">{{ $product->stock_actual }}</span>
+                                            @elseif($product->stock_actual > $product->stock_bajo)
+                                                <span class="badge bg-warning">{{ $product->stock_actual }}</span>
+                                            @elseif($product->stock_actual > 0)
+                                                <span class="badge bg-danger">{{ $product->stock_actual }}</span>
                                             @else
-                                                <span class="badge bg-danger">{{ $product->stock }}</span>
+                                                <span class="badge bg-dark">0</span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if($product->stock > 0)
+                                            @if($product->stock_actual > $product->stock_bajo)
                                                 <span class="badge bg-label-success">Disponible</span>
+                                            @elseif($product->stock_actual > 0)
+                                                <span class="badge bg-label-warning">Stock Bajo</span>
                                             @else
                                                 <span class="badge bg-label-danger">Sin Stock</span>
                                             @endif
@@ -101,7 +112,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">
+                                        <td colspan="7" class="text-center py-4">
                                             <div class="empty-state">
                                                 <i class="ti ti-package ti-5x text-muted mb-3"></i>
                                                 <h5 class="text-muted">No hay productos registrados</h5>

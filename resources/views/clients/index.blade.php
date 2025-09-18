@@ -26,11 +26,11 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Cliente</th>
-                                    <th>RUT</th>
+                                    <th>Razón Social</th>
+                                    <th>RUT Empresa</th>
+                                    <th>Contacto</th>
                                     <th>Email</th>
                                     <th>Teléfono</th>
-                                    <th>Ciudad</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -41,30 +41,26 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar avatar-sm me-3">
                                                     <span class="avatar-initial rounded-circle bg-label-info">
-                                                        {{ strtoupper(substr($client->nombre, 0, 2)) }}
+                                                        {{ strtoupper(substr($client->razon_social, 0, 2)) }}
                                                     </span>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0">{{ $client->nombre }}</h6>
-                                                    @if($client->region)
-                                                        <small class="text-muted">{{ $client->region }}</small>
-                                                    @endif
+                                                    <h6 class="mb-0">{{ $client->razon_social }}</h6>
+                                                    <small class="text-muted">{{ $client->rubro }}</small>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-label-secondary">{{ $client->rut }}</span>
+                                            <span class="badge bg-label-secondary">{{ $client->rut_empresa }}</span>
                                         </td>
-                                        <td>{{ $client->email }}</td>
+                                        <td>{{ $client->nombre_contacto }}</td>
+                                        <td>{{ $client->email_contacto }}</td>
                                         <td>
                                             @if($client->telefono)
                                                 <i class="ti ti-phone me-1 text-success"></i>{{ $client->telefono }}
                                             @else
                                                 <span class="text-muted">No registrado</span>
                                             @endif
-                                        </td>
-                                        <td>
-                                            {{ $client->ciudad ?? 'No especificada' }}
                                         </td>
                                         <td>
                                             <div class="dropdown">

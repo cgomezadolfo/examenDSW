@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('sku', 50)->unique();
             $table->string('nombre', 255);
             $table->text('descripcion_corta');
-            $table->longText('descripcion_larga');
+            $table->longText('descripcion_larga')->nullable();
             $table->string('imagen_url', 500)->nullable();
             $table->decimal('precio_neto', 10, 2);
             $table->decimal('precio_venta', 10, 2);

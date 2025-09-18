@@ -41,6 +41,7 @@ class UserController extends Controller
 
         User::create([
             'rut' => $request->rut,
+            'name' => $request->nombre . ' ' . $request->apellido,
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'email' => $request->email,
@@ -81,6 +82,7 @@ class UserController extends Controller
 
         $userData = [
             'rut' => $request->rut,
+            'name' => $request->nombre . ' ' . $request->apellido,
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
             'email' => $request->email,
